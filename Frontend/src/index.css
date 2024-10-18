@@ -1,0 +1,31 @@
+* {
+  margin: 0%;
+  padding: 0;
+  box-sizing: border-box;
+  /* background-color: rgba(117, 112, 112, 0.274); */
+}
+
+.jacques-francois-shadow-regular {
+  font-family: "Jacques Francois Shadow", serif;
+  font-weight: 600;
+  font-style: normal;
+  /* color: rgb(295, 150, 0); */
+}
+
+.button {
+  padding: 7px 20px;
+  border-radius: 20px;
+  font-size: 23px;
+  font-weight: bolder;
+  border: 2px solid black;
+  color: white;
+  background-color: black;
+  cursor: pointer;
+}
+
+.button:hover {
+  color: black;
+  background-color: rgba(93, 221, 241, 0.856);
+  border: 2px solid rgba(93, 221, 241, 0.856);
+  cursor: pointer;
+}
