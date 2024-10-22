@@ -3,19 +3,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
 
-// Token  Function
-const generateAccessToken = async (userId) => {
-  try {
-    const user = User.findById(userId);
-    const Token = user.generateToken();
-    User.token = Token;
-    User.save({ validateBeforeSave: false });
-    return { Token };
-  } catch (error) {
-    throw new ApiError(400, "Something went wrong while generating token..");
-  }
-};
-
 const RegisterUser = asyncHandler(async (req, res) => {
   // Getting user detail from frontend
   const { firstName, lastName, email, password, ConfirmPassword } = req.body;
@@ -44,7 +31,10 @@ const RegisterUser = asyncHandler(async (req, res) => {
     password,
   });
   //Access the token
-  const { Token } = generateAccessToken(user._id);
+  // Generating token
+  const token = await jwt.sign({ id: user._id }, "jsonwebtokentkey", {
+    expiresIn: "30d",
+  });
   //Data for sending to frontend without password
   const createdUser = User.findById(user._id).select("-password");
 
@@ -60,7 +50,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .cookie("Token", Token, options)
+    .cookie("Token", token, options)
     .json(new ApiResponse(200, createdUser, "User Created Successfully..."));
 });
 const LoginUser = asyncHandler(async (req, res) => {
@@ -83,8 +73,10 @@ const LoginUser = asyncHandler(async (req, res) => {
   if (!isPasswordValid) {
     throw new ApiError(400, "Invalid Password...");
   }
-  //generate and Access Token
-  const { Token } = generateAccessToken(user._id);
+  // Generating token
+  const token = await jwt.sign({ id: user._id }, "jsonwebtokentkey", {
+    expiresIn: "30d",
+  });
   //send cookies
   const options = {
     httpOnly: true,
@@ -93,31 +85,28 @@ const LoginUser = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .cookie("Token", Token, options)
+    .cookie("Token", token, options)
     .json(new ApiResponse(200, Token, "User LoggedIn Successfully..."));
 });
 
 const LogoutUser = asyncHandler(async (req, res) => {
-  //making token undefined
   try {
-    await User.findByIdAndUpdate(req.user._id, {
-      $set: [
-        {
-          token: undefined,
-        },
-      ],
-    });
+    // Set the user's token to undefined in the database
+    await User.findByIdAndUpdate(req.user._id, { token: undefined });
+
+    // Options for clearing the cookie
     const options = {
       httpOnly: true,
       secure: true,
     };
 
+    // Clear the cookie (assuming the cookie name is "Token")
     return res
       .status(200)
-      .clearCookie(Token, options)
-      .json(new ApiResponse(200, Token, "User loggedout Successfully..."));
+      .clearCookie("Token", options)
+      .json(new ApiResponse(200, null, "User logged out successfully"));
   } catch (error) {
-    throw new ApiError(400, "Someting went wrong while logout the user..");
+    throw new ApiError(400, "Something went wrong while logging out the user.");
   }
 });
 
