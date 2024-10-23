@@ -7,7 +7,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { BASE_URL } from "../Api";
 const Login = () => {
+  const navigate = useNavigate();
   //Showing error using react-toastify
   const notifyError = (error) =>
     toast.error(error, {
@@ -34,6 +37,10 @@ const Login = () => {
   //Getting data using react-hook-form
   const { register, handleSubmit } = useForm();
   const onSubmitHandler = async (data) => {
+    const token = localStorage.getItem("token");
+
+    console.log("token", token);
+
     // console.log("data", data);
     if (!data) {
       notifyError("🦄 Fill all the fields!");
@@ -41,8 +48,21 @@ const Login = () => {
       console.log(data, "login Data");
       notifySuccess("🦄 Successfully signed In");
     }
+    try {
+      const res = await axios.post(`${BASE_URL}/login`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log(res.data.message);
+      const userToken = res.data.token;
+      // localStorage.setItem("token", userToken);
+      // navigate("/home");
+    } catch (error) {
+      console.log("error", error);
+    }
   };
-  const navigate = useNavigate();
+
   return (
     <>
       <div

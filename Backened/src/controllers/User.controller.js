@@ -33,9 +33,13 @@ const RegisterUser = asyncHandler(async (req, res) => {
   });
   //Access the token
   // Generating token
-  const token = await jwt.sign({ id: user._id }, "jsonwebtokentkey", {
-    expiresIn: "30d",
-  });
+  const token = await jwt.sign(
+    { id: user._id, firstName, lastName, email },
+    "jsonwebtokentkey",
+    {
+      expiresIn: "30d",
+    }
+  );
   //Data for sending to frontend without password
   const createdUser = await User.findById(user._id).select("-password");
 
@@ -52,7 +56,9 @@ const RegisterUser = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .cookie("Token", token, options)
-    .json(new ApiResponse(200, createdUser, "User Created Successfully..."));
+    .json(
+      new ApiResponse(200, createdUser, token, "User Created Successfully...")
+    );
 });
 const LoginUser = asyncHandler(async (req, res) => {
   // getting data from frontend
@@ -87,7 +93,7 @@ const LoginUser = asyncHandler(async (req, res) => {
   return res
     .status(201)
     .cookie("Token", token, options)
-    .json(new ApiResponse(200, Token, "User LoggedIn Successfully..."));
+    .json(new ApiResponse(200, token, "User LoggedIn Successfully..."));
 });
 
 const LogoutUser = asyncHandler(async (req, res) => {

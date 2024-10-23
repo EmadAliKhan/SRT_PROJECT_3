@@ -4,7 +4,6 @@ import {
   LogoutUser,
   RegisterUser,
 } from "../controllers/User.controller.js";
-// import { verifyJWT } from "../middlewares/Auth.middleware.js";
 
 const router = Router();
 router.route("/register").post(RegisterUser);

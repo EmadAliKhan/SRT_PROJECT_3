@@ -36,6 +36,7 @@ const SignUp = () => {
     });
   //Getting data using react-hook-form
   const { register, handleSubmit } = useForm();
+  const navigate = useNavigate();
   const onSubmitHandler = async (data) => {
     // console.log("data", data);
     if (!data) {
@@ -46,9 +47,19 @@ const SignUp = () => {
       console.log(data, "final data");
       notifySuccess("🦄 Your Account created Successfully");
     }
+    try {
+      const res = await axios.post(`${BASE_URL}/register`, data);
+      console.log(res.data.message);
+      const token = res.data.message;
+      JSON.stringify(localStorage.setItem("token", token));
+      setTimeout(() => {
+        navigate("/home");
+      }, 3000);
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
-  const navigate = useNavigate();
   return (
     <>
       <div
