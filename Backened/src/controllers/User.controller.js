@@ -2,6 +2,7 @@ import { User } from "../models/User.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
+import jwt from "jsonwebtoken";
 
 const RegisterUser = asyncHandler(async (req, res) => {
   // Getting user detail from frontend
@@ -36,7 +37,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
     expiresIn: "30d",
   });
   //Data for sending to frontend without password
-  const createdUser = User.findById(user._id).select("-password");
+  const createdUser = await User.findById(user._id).select("-password");
 
   if (createdUser) {
     throw new ApiError(400, "something went wrong while registering the user");
@@ -92,7 +93,8 @@ const LoginUser = asyncHandler(async (req, res) => {
 const LogoutUser = asyncHandler(async (req, res) => {
   try {
     // Set the user's token to undefined in the database
-    await User.findByIdAndUpdate(req.user._id, { token: undefined });
+    const { id } = req.body;
+    await User.findByIdAndUpdate(id, { token: undefined });
 
     // Options for clearing the cookie
     const options = {

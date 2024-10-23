@@ -12,6 +12,7 @@ app.use(cookieparser());
 //Routes
 import UserRoute from "./routes/User.route.js";
 app.use("/api/v1", UserRoute);
+
 // http://localhost:8001/api/v1/message
 
 export { app };
