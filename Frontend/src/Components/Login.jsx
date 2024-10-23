@@ -47,19 +47,20 @@ const Login = () => {
     } else {
       console.log(data, "login Data");
       notifySuccess("🦄 Successfully signed In");
-    }
-    try {
-      const res = await axios.post(`${BASE_URL}/login`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log(res.data.message);
-      const userToken = res.data.token;
-      // localStorage.setItem("token", userToken);
-      // navigate("/home");
-    } catch (error) {
-      console.log("error", error);
+
+      try {
+        const res = await axios.post(`${BASE_URL}/login`, data, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log(res.data.message);
+        const userToken = res.data.token;
+        // localStorage.setItem("token", userToken);
+        // navigate("/home");
+      } catch (error) {
+        console.log("error", error);
+      }
     }
   };
 

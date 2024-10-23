@@ -52,9 +52,7 @@ const SignUp = () => {
       console.log(res.data.message);
       const token = res.data.message;
       JSON.stringify(localStorage.setItem("token", token));
-      setTimeout(() => {
-        navigate("/home");
-      }, 3000);
+      navigate("/home");
     } catch (error) {
       console.log("error", error);
     }
